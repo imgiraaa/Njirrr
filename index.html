@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mora - Cloud & AI</title>
+  <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+  <!-- Using Inter font as per best practice recommendation, though original used Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Momo+Trust+Display&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Paytone+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+    /* -----------------------------------*\
+     * #RESET & BASE
+    \*----------------------------------- */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --dark-orange: #d35400;
+      --dark-orange-80: #b04700;
+      --dark-orange-light: #e67e22;
+      --charcoal: #1a1a1a;
+      --charcoal-90: #222;
+      --charcoal-80: #333;
+      --cream: #f8f4f0;
+      --cream-light: #fdfdfc;
+      --white: #ffffff;
+      --transparent-black-10: rgba(0, 0, 0, 0.1);
+      --transparent-black-20: rgba(0, 0, 0, 0.2);
+      --transparent-white-10: rgba(255, 255, 255, 0.1);
+      --transparent-white-20: rgba(255, 255, 255, 0.2);
+
+      /* Changed font to Inter */
+      --ff-poppins: "Inter", sans-serif;
+      --fs-1: clamp(2.5rem, 5vw, 4rem);
+      --fs-2: clamp(2rem, 4vw, 2.8rem);
+      --fs-3: clamp(1.5rem, 3vw, 2rem);
+      --fs-4: clamp(1rem, 2.5vw, 1.25rem);
+      --fs-5: 0.9375rem;
+      --fs-6: 0.875rem;
+
+      --fw-700: 700;
+      --fw-600: 600;
+      --fw-500: 500;
+
+      --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    body {
+      font-family: "Raleway", sans-serif;
+      background-color: var(--charcoal);
+      color: var(--cream);
+      /* Keeping overflow-x hidden to prevent layout scroll from other minor issues */
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    ul { list-style: none; }
+    a { text-decoration: none; }
+    img, button, input, textarea { display: block; }
+    button {
+      font: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    input, textarea {
+      font: inherit;
+      background: none;
+      border: none;
+      width: 100%;
+    }
+    :is(input, textarea):focus { outline: none; }
+
+    .container {
+      width: min(95%, 1200px);
+      margin-inline: auto;
+      padding: 0 1rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes pulseGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .animate {
+      opacity: 0;
+      animation: fadeInUp 0.8s var(--easing) forwards;
+    }
+    .animate.delay-1 { animation-delay: 0.2s; }
+    .animate.delay-2 { animation-delay: 0.4s; }
+    .animate.delay-3 { animation-delay: 0.6s; }
+    .animate.delay-4 { animation-delay: 0.8s; }
+
+    /* -----------------------------------*\
+     * #REUSED STYLES
+    \*----------------------------------- */
+    .h1, .h2, .h3 {
+      font-weight: var(--fw-700);
+      line-height: 1.2;
+      text-transform: capitalize;
+    }
+    .h1 { font-size: var(--fs-1); color: var(--cream); }
+    .h2 { font-size: var(--fs-2); color: var(--cream); }
+    .h3 { font-size: var(--fs-3); color: var(--cream); }
+    .h4 { font-size: var(--fs-5); font-weight: var(--fw-600); color: var(--dark-orange-light); }
+
+    .btn {
+      font-size: var(--fs-6);
+      text-transform: uppercase;
+      font-weight: var(--fw-600);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      transition: var(--transition);
+      will-change: transform, box-shadow;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--dark-orange), var(--dark-orange-light));
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(211, 84, 0, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(211, 84, 0, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--transparent-white-20);
+      color: var(--cream);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-3px);
+    }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(30, 30, 30, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--transparent-white-10);
+      box-shadow: 0 8px 32px var(--transparent-black-20);
+    }
+
+    /* -----------------------------------*\
+     * #HEADER
+    \*----------------------------------- */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 0;
+      z-index: 1000;
+      transition: var(--transition);
+    }
+    header.scrolled {
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      padding: 1rem 0;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 40px;
+      filter: brightness(1.2);
+    }
+
+    .navbar-wrapper {
+      position: relative;
+    }
+
+    .navbar-menu-btn {
+      font-size: 1.8rem;
+      color: var(--cream);
+      background: rgba(255, 255, 255, 0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transition: var(--transition);
+    }
+    .navbar-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(90deg);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 80%;
+      max-width: 320px;
+      height: 100vh;
+      background: var(--charcoal-90);
+      padding: 6rem 2rem 2rem;
+      transition: var(--transition);
+      z-index: 999;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .navbar.active {
+      right: 0;
+    }
+
+    .navbar::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--dark-orange), transparent 50%);
+      opacity: 0.05;
+      z-index: -1;
+    }
+
+    .nav-close-btn {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      font-size: 1.8rem;
+      color: var(--cream);
+      z-index: 10;
+    }
+
+    .navbar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .nav-link {
+      color: var(--cream);
+      font-size: var(--fs-5);
+      font-weight: var(--fw-500);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--transparent-white-10);
+      transition: var(--transition);
+    }
+    .nav-link:hover {
+      color: var(--dark-orange-light);
+      padding-left: 0.5rem;
+    }
+
+    /* Desktop Navbar */
+    @media (min-width: 1024px) {
+      .navbar-menu-btn, .nav-close-btn { display: none; }
+      .navbar {
+        position: static;
+        width: auto;
+        height: auto;
+        background: none;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .navbar::before { display: none; }
+      .navbar-list {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+      .nav-link {
+        padding: 0;
+        border: none;
+      }
+      .navbar .btn-primary {
+        display: block;
+      }
+    }
+
+    /* -----------------------------------*\
+     * #HERO FIXES
+    \*----------------------------------- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 0 4rem;
+      position: relative;
+      overflow: hidden;
+      /* On mobile, let the content flow naturally */
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, var(--dark-orange) 0%, transparent 70%);
+      opacity: 0.08;
+      z-index: -2;
+    }
+
+    .hero-content {
+      /* max-width is now applied primarily for centering on mobile */
+      max-width: 650px;
+      z-index: 2;
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    .hero-title {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .hero-title::after {
+      content: "";
+      position: absolute;
+      bottom: -10px; left: 0;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--dark-orange), transparent);
+      border-radius: 2px;
+    }
+
+    .hero-text {
+      font-size: var(--fs-4);
+      color: var(--cream-light);
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    /* FIX: Hero Banner Mobile Positioning */
+    .hero-banner {
+      /* Mobile: Make it stack below content and use relative positioning */
+      position: relative; 
+      top: auto;
+      right: auto;
+      transform: none;
+      
+      width: 100%; /* Full width on mobile */
+      max-width: 100%;
+      height: 300px; /* Set a reasonable fixed height for mobile image visibility */
+      margin-top: 3rem; /* Add spacing below text content */
+      
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23333'/%3E%3Ctext x='400' y='300' text-anchor='middle' fill='%23fff' font-size='30' font-family='Inter'%3EHero Image Placeholder%3C/text%3E%3C/svg%3E") no-repeat center center;
+      background-size: cover;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      
+      /* Use a simpler fadeInUp animation for stacking layout */
+      opacity: 0; 
+      animation: fadeInUp 0.8s var(--easing) 0.3s forwards;
+    }
+    
+    /* Keeping original slideInRight keyframe, it will only be used on desktop */
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(100px) translateY(-50%); }
+      to { opacity: 0.9; transform: translateX(0) translateY(-50%); }
+    }
+
+
+    /* -----------------------------------*\
+     * #ABOUT
+    \*----------------------------------- */
+    .about {
+      padding: 8rem 0;
+      position: relative;
+    }
+
+    .section-title {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: -8px; left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--dark-orange), transparent);
+    }
+
+    .section-text {
+      max-width: 700px;
+      margin-bottom: 3rem;
+      color: var(--cream-light);
+      line-height: 1.7;
+    }
+
+    .about-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
+
+    .about-card {
+      padding: 2.5rem;
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+    .about-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, var(--dark-orange), var(--dark-orange-light));
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: var(--white);
+    }
+
+    .card-title {
+      margin-bottom: 1rem;
+    }
+    .card-text {
+      color: var(--cream-light);
+      opacity: 0.85;
+      line-height: 1.6;
+    }
+
+    .about-bottom {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-bottom-banner {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .about-bottom-banner img {
+      width: 100%;
+      display: block;
+      transition: var(--transition);
+    }
+    .about-bottom-banner:hover img {
+      transform: scale(1.05);
+    }
+
+    /* -----------------------------------*\
+     * #FEATURES
+    \*----------------------------------- */
+    .features {
+      padding: 6rem 0;
+      background: var(--charcoal-80);
+    }
+
+    .features-list {
+      display: grid;
+      gap: 4rem;
+    }
+
+    .features-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .features-item-banner {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    .features-item-banner img {
+      width: 100%;
+      display: block;
+    }
+
+    .feature-item-content .item-title {
+      margin-bottom: 1rem;
+    }
+    .feature-item-content .item-text {
+      color: var(--cream-light);
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    /* -----------------------------------*\
+     * #CTA
+    \*----------------------------------- */
+    .cta {
+      padding: 6rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--dark-orange) 0%, var(--charcoal) 100%);
+      opacity: 0.05;
+      z-index: 0;
+    }
+
+    .cta-card {
+      position: relative;
+      z-index: 2;
+      padding: 4rem;
+      border-radius: 24px;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-size: var(--fs-1);
+      font-weight: var(--fw-700);
+      margin-bottom: 1.5rem;
+      background: linear-gradient(90deg, var(--cream), #ffd599);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .cta-text {
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      color: var(--cream-light);
+      font-size: var(--fs-4);
+      line-height: 1.6;
+    }
+
+    .cta-form {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cta input {
+      flex: 1;
+      min-width: 300px;
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--transparent-white-20);
+      color: var(--cream);
+      font-size: var(--fs-5);
+    }
+    .cta input::placeholder { color: var(--cream-light); opacity: 0.7; }
+
+    /* -----------------------------------*\
+     * #CONTACT
+    \*----------------------------------- */
+    .contact {
+      padding: 6rem 0 4rem;
+    }
+
+    .contact-content {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .contact-banner {
+      max-width: 400px;
+      margin: 0 auto 3rem;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .input-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-label {
+      font-size: var(--fs-5);
+      margin-bottom: 0.5rem;
+      font-weight: var(--fw-600);
+    }
+
+    .input-field {
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--transparent-white-10);
+      color: var(--cream);
+      font-size: var(--fs-5);
+    }
+    .input-field::placeholder { color: var(--cream-light); opacity: 0.7; }
+
+    textarea.input-field {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    /* -----------------------------------*\
+     * #FOOTER
+    \*----------------------------------- */
+    footer {
+      background: var(--charcoal-90);
+      padding: 5rem 0 2rem;
+      position: relative;
+    }
+
+    .footer-top {
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      margin-bottom: 2rem;
+    }
+
+    .footer-text {
+      margin: 1rem 0;
+      color: var(--cream-light);
+      opacity: 0.8;
+    }
+
+    .social-list {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .social-link {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: grid;
+      place-items: center;
+      color: var(--cream);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    .social-link:hover {
+      background: var(--dark-orange);
+      transform: translateY(-3px);
+    }
+
+    .footer-link-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-link-list .link-title {
+      margin-bottom: 1.2rem;
+      color: var(--cream);
+    }
+
+    .footer-link {
+      color: var(--cream-light);
+      opacity: 0.8;
+      margin-bottom: 0.6rem;
+      transition: var(--transition);
+    }
+    .footer-link:hover {
+      color: var(--dark-orange-light);
+      padding-left: 0.3rem;
+    }
+
+    .footer-bottom {
+      padding-top: 2rem;
+      border-top: 1px solid var(--transparent-white-10);
+      text-align: center;
+      color: var(--cream-light);
+      opacity: 0.7;
+      font-size: var(--fs-6);
+    }
+
+    /* -----------------------------------*\
+     * #GO TO TOP
+    \*----------------------------------- */
+    .go-top {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--dark-orange), var(--dark-orange-light));
+      box-shadow: 0 6px 20px rgba(211, 84, 0, 0.4);
+      display: grid;
+      place-items: center;
+      color: var(--white);
+      font-size: 1.4rem;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: var(--transition);
+      z-index: 100;
+    }
+    .go-top.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+      transform: scale(1);
+    }
+    .go-top:hover {
+      transform: scale(1.1) translateY(-3px);
+    }
+
+    /* -----------------------------------*\
+     * #RESPONSIVE
+    \*----------------------------------- */
+    @media (min-width: 768px) {
+      .hero {
+        padding-top: 6rem;
+      }
+      /* Tablet/Desktop layout adjustments */
+      .about-bottom {
+        grid-template-columns: 1fr 1fr;
+      }
+      .features-item {
+        grid-template-columns: 1fr 1fr;
+      }
+      .features-item:nth-child(even) {
+        grid-template-columns: 1fr 1fr;
+        /* FIX: Direction rtl on the item causes issues on some layouts,
+           instead, use order to swap content and banner */
+        direction: ltr; /* Reset direction */
+      }
+      /* FIX: Swap image and content order for even features */
+      .features-item:nth-child(even) .features-item-banner {
+          order: 2;
+      }
+      .features-item:nth-child(even) .feature-item-content {
+          order: 1;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      /* FIX: Revert Hero banner to absolute positioning for desktop side-by-side */
+      .hero-banner {
+        position: absolute;
+        top: 50%;
+        right: 8%; /* Slightly adjusted for better right margin */
+        transform: translateY(-50%);
+        width: 40%; /* Adjusted from 45% */
+        height: 70vh;
+        margin-top: 0;
+        
+        /* Re-apply desktop specific animation */
+        opacity: 0;
+        animation: slideInRight 1s var(--easing) 0.3s forwards;
+      }
+
+      .hero-content {
+        max-width: 550px;
+      }
+      
+      /* Existing 1024px styles */
+      .about-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body id="top">
+  <!-- #HEADER -->
+  <header id="header">
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <img src="logo.png" alt="logo mora">
+      </a>
+
+      <div class="navbar-wrapper">
+        <button class="navbar-menu-btn" data-navbar-toggle-btn>
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+
+        <nav class="navbar glass" data-navbar>
+          <button class="nav-close-btn" data-navbar-toggle-btn>
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+
+          <ul class="navbar-list">
+            <li class="nav-item"><a href="#home" class="nav-link animate delay-1">Home</a></li>
+            <li class="nav-item"><a href="#about" class="nav-link animate delay-2">What we do</a></li>
+            <li class="nav-item"><a href="#features" class="nav-link animate delay-3">Why us?</a></li>
+            <li class="nav-item"><a href="#" class="nav-link animate delay-4">Our work</a></li>
+            <li class="nav-item"><a href="#contact" class="nav-link animate">Contact</a></li>
+          </ul>
+
+          <button class="btn btn-primary animate">Get in touch</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article>
+      <!-- #HERO -->
+      <section class="hero" id="home">
+        <div class="container">
+          <!-- The hero-content div is the only element that flows naturally on mobile -->
+          <div class="hero-content animate">
+            <h1 class="h1 hero-title">Cloud & AI Training & Agent</h1>
+            <p class="hero-text">
+              
+            </p>
+            <button class="btn btn-primary animate delay-1">Get started</button>
+          </div>
+
+          <!-- FIX: On mobile, this will now stack below content and take full width. On desktop, it becomes absolute. -->
+          <div class="hero-banner"></div>
+        </div>
+      </section>
+
+      <!-- #ABOUT -->
+      <section class="about" id="about">
+        <div class="container">
+          <div class="about-top">
+            <h2 class="h2 section-title animate">What we do</h2>
+            <p class="section-text animate delay-1">
+              Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back into the
+              development of the asset through its charitable foundation.
+            </p>
+
+            <ul class="about-list">
+              <li class="animate">
+                <div class="about-card glass">
+                  <div class="card-icon">
+                    <ion-icon name="briefcase-outline"></ion-icon>
+                  </div>
+                  <h3 class="h3 card-title">Paid Search and Social Management</h3>
+                  <p class="card-text">
+                    Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back
+                  </p>
+                </div>
+              </li>
+              <li class="animate delay-1">
+                <div class="about-card glass">
+                  <div class="card-icon">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                  </div>
+                  <h3 class="h3 card-title">Direct Response Content</h3>
+                  <p class="card-text">
+                    Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back
+                  </p>
+                </div>
+              </li>
+              <li class="animate delay-2">
+                <div class="about-card glass">
+                  <div class="card-icon">
+                    <ion-icon name="rocket-outline"></ion-icon>
+                  </div>
+                  <h3 class="h3 card-title">CRO and Retention Optimizations</h3>
+                  <p class="card-text">
+                    Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="about-bottom">
+            <figure class="about-bottom-banner animate">
+              <!-- Placeholder SVG for About Banner -->
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23333'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='20' font-family='Inter'%3EAbout Banner Placeholder%3C/text%3E%3C/svg%3E" alt="Team collaboration">
+            </figure>
+
+            <div class="about-bottom-content animate delay-1">
+              <h2 class="h2 section-title">We’re obsessed with growth</h2>
+              <p class="section-text">
+                Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back into the
+                development of the asset through its charitable foundation.
+              </p>
+              <button class="btn btn-secondary">Sign Up For Free</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- #FEATURES -->
+      <section class="features" id="features">
+        <div class="container">
+          <h2 class="h2 section-title animate">Grow 1 Beta, pre-releases</h2>
+          <p class="section-text animate delay-1">
+            You can use it with sufficient reasoning, your responses are also used to train AI to improve reasoning, Please note, this AI is still a very early version, there is a possibility that some responses are not correct.Not accurate.
+          </p>
+
+          <ul class="features-list">
+            <li class="features-item animate">
+              <figure class="features-item-banner">
+                <!-- Placeholder SVG for Feature 1 -->
+                <img src="grow1.jpg" alt="Grow 1">
+              </figure>
+              <div class="feature-item-content">
+                <h3 class="h3 item-title">Cover your everyday expenses</h3>
+                <p class="item-text">
+                  Inspiration comes in many ways and you like to save everything from. sed do eiusmod tempor incididunt
+                  ut labore et dolore magna aliqua.
+                </p>
+              </div>
+            </li>
+
+            <li class="features-item animate delay-1">
+              <figure class="features-item-banner">
+                <!-- Placeholder SVG for Feature 2 -->
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23333'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='20' font-family='Inter'%3EFeature 2 Placeholder%3C/text%3E%3C/svg%3E" alt="Feature 2">
+              </figure>
+              <div class="feature-item-content">
+                <h3 class="h3 item-title">We offer low fees that are transparent</h3>
+                <p class="item-text">
+                  Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back into the
+                  development of the asset through its charitable foundation.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- #CTA -->
+      <section class="cta">
+        <div class="container">
+          <div class="cta-card glass">
+            <h3 class="cta-title animate">Try for 7 days free</h3>
+            <p class="cta-text animate delay-1">
+              Each time a digital asset is purchased or sold, Sequoir donates a percentage of the fees back.
+            </p>
+            <form class="cta-form animate delay-2">
+              <input type="email" name="email" placeholder="Your email address">
+              <button type="submit" class="btn btn-primary">Try It Now</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- #CONTACT -->
+      <section class="contact" id="contact">
+        <div class="container">
+          <div class="contact-content">
+            <h2 class="h2 contact-title animate">Let’s scale your brand, together</h2>
+            <figure class="contact-banner animate delay-1">
+              <!-- Placeholder SVG for Contact illustration -->
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23333'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='20' font-family='Inter'%3EContact Banner Placeholder%3C/text%3E%3C/svg%3E" alt="Contact illustration">
+            </figure>
+          </div>
+
+          <form class="contact-form animate delay-2">
+            <div class="input-wrapper">
+              <label for="name" class="input-label">Name *</label>
+              <input type="text" name="name" id="name" required placeholder="Type Name" class="input-field">
+            </div>
+            <div class="input-wrapper">
+              <label for="phone" class="input-label">Phone</label>
+              <input type="tel" name="phone" id="phone" placeholder="Type Phone Number" class="input-field">
+            </div>
+            <div class="input-wrapper">
+              <label for="email" class="input-label">Email Address *</label>
+              <input type="email" name="email" id="email" required placeholder="Type Email Address" class="input-field">
+            </div>
+            <div class="input-wrapper">
+              <label for="message" class="input-label">How can we help? *</label>
+              <textarea name="message" id="message" placeholder="Type Description" required class="input-field"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </form>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <!-- #FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <!-- Placeholder SVG for Funel Logo -->
+        <img src="logo.png" alt="logo mora">
+          </a>
+          <p class="footer-text">Follow us on</p>
+          <ul class="social-list">
+            <li><a href="#" class="social-link"><ion-icon name="logo-github"></ion-icon></a></li>
+            <li><a href="#" class="social-link"><ion-icon name="logo-instagram"></ion-icon></a></li>
+            <li><a href="#" class="social-link"><ion-icon name="logo-youtube"></ion-icon></a></li>
+            <li><a href="#" class="social-link"><ion-icon name="logo-facebook"></ion-icon></a></li>
+          </ul>
+        </div>
+
+        <div class="footer-link-box">
+          <ul class="footer-link-list">
+            <li><h3 class="h4 link-title">Company</h3></li>
+            <li><a href="#" class="footer-link">About Us</a></li>
+            <li><a href="#" class="footer-link">Features</a></li>
+            <li><a href="#" class="footer-link">Pricing</a></li>
+          </ul>
+          <ul class="footer-link-list">
+            <li><h3 class="h4 link-title">Products</h3></li>
+            <li><a href="chatai.html" class="footer-link">AI</a></li>
+            <li><a href="#" class="footer-link">Cloud</a></li>
+            <li><a href="#" class="footer-link">API</a></li>
+          </ul>
+          <ul class="footer-link-list">
+            <li><h3 class="h4 link-title">Help Center</h3></li>
+            <li><a href="#" class="footer-link">FAQ’S</a></li>
+            <li><a href="#" class="footer-link">Docs</a></li>
+            <li><a href="#" class="footer-link">Customers Service</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="copyright">
+        &copy; 2025 <a href="#">Mora</a> All rights reserved
+      </p>
+    </div>
+  </footer>
+
+  <!-- #GO TO TOP -->
+  <a href="#top" class="go-top" data-go-top>
+    <ion-icon name="chevron-up-outline"></ion-icon>
+  </a>
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <script>
+    'use strict';
+
+    // Navbar toggle
+    const menuToggleBtn = document.querySelector("[data-navbar-toggle-btn]");
+    const navbar = document.querySelector("[data-navbar]");
+    const header = document.getElementById("header");
+
+    const toggleNavbar = () => {
+      navbar.classList.toggle("active");
+      document.body.classList.toggle("nav-open");
+    };
+
+    if (menuToggleBtn) {
+      menuToggleBtn.addEventListener("click", toggleNavbar);
+    }
+
+    // Close navbar when clicking link (mobile)
+    document.querySelectorAll(".nav-link").forEach(link => {
+      link.addEventListener("click", () => {
+        if (navbar.classList.contains("active")) {
+          toggleNavbar();
+        }
+      });
+    });
+
+    // Also close navbar when clicking close button
+    const navCloseBtn = document.querySelector(".nav-close-btn");
+    if (navCloseBtn) {
+      navCloseBtn.addEventListener("click", toggleNavbar);
+    }
+
+    // Header scroll effect
+    const handleHeaderScroll = () => {
+      if (window.scrollY > 100) {
+        header.classList.add("scrolled");
+      } else {
+        header.classList.remove("scrolled");
+      }
+    };
+
+    window.addEventListener("scroll", handleHeaderScroll);
+
+    // Scroll animations
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll(".animate").forEach(el => {
+      // Only observe elements that don't already have explicit delays defined in the HTML
+      // This is a correction: The original code intended to animate elements with delays
+      // without needing the observer, but the CSS makes all elements with `.animate`
+      // start invisible. We must make sure the observer runs for non-delayed items.
+      if (!el.classList.contains("delay-1") && 
+          !el.classList.contains("delay-2") && 
+          !el.classList.contains("delay-3") && 
+          !el.classList.contains("delay-4")) {
+        observer.observe(el);
+      }
+    });
+
+    // Go to top button
+    const goTopBtn = document.querySelector("[data-go-top]");
+    
+    const handleScroll = () => {
+      if (window.scrollY >= 600) {
+        goTopBtn.classList.add("active");
+      } else {
+        goTopBtn.classList.remove("active");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          // Adjust scroll position to account for the fixed header height
+          const headerHeight = document.getElementById('header').offsetHeight;
+          window.scrollTo({
+            top: target.offsetTop - headerHeight - 20, /* 20px extra padding */
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

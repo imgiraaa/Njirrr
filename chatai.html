@@ -1,0 +1,1692 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow Chat | Mora</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS is used for modern styling components and responsiveness -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    /*
+     * ======================================
+     * THEME: DARK ORANGE (Penyesuaian Utama)
+     * ======================================
+     */
+    :root {
+      /* Dark Theme */
+      --color-background: #1e1e1e; /* Hampir hitam */
+      --color-surface: #2b2b2b;    /* Lebih terang dari background */
+      --color-text: #f0f0f0;       /* Putih pudar untuk dark mode */
+      /* Orange Primary Action */
+      --color-primary: #ff8c00;    /* Dark Orange */
+      --color-primary-dark: #cc7000;
+      --color-primary-light: #ffaa33;
+      --color-secondary-text: #a0a0a0; /* Abu-abu untuk teks sekunder */
+      --color-border: #444444;
+      --color-error-bg: #440000;
+      --color-error-text: #ffdddd;
+    }
+
+    /* BASE STYLES & OVERRIDES */
+    body {
+      box-sizing: border-box;
+      font-family: 'Raleway', sans-serif;
+      background: var(--color-background); /* Ganti dari 'black' */
+      color: var(--color-text);
+      overflow: hidden;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface); /* Ganti dari 'white' */
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text); /* Putih */
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* BEGIN: Model Selector Custom Styling */
+    .model-selector {
+      position: relative;
+    }
+    
+    .model-dropdown {
+      display: none !important;
+    }
+
+    .custom-dropdown-button {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 24px;
+      padding: 10px 40px 10px 20px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 150px;
+    }
+
+    .custom-dropdown-button:hover {
+      background: var(--color-surface);
+      border-color: var(--color-primary-light);
+    }
+
+    .custom-dropdown-button.open {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+    }
+    
+    #custom-dropdown-list {
+      position: absolute;
+      top: 100%; 
+      right: 0;
+      z-index: 10;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      margin-top: 8px;
+      min-width: 200px;
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dropdown-item:hover {
+      background-color: #383838; /* Darker hover */
+      color: var(--color-primary-light);
+    }
+    
+    .dropdown-item.selected {
+      background-color: #383838;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    
+    .item-description {
+        font-size: 12px;
+        color: var(--color-secondary-text);
+        font-weight: 400;
+    }
+    
+    .dropdown-arrow {
+      margin-left: 10px;
+      width: 12px;
+      height: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .custom-dropdown-button.open .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+    /* END: Model Selector Custom Styling */
+
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      /* Scrollbar styling for dark mode */
+      scrollbar-color: var(--color-primary) var(--color-surface);
+      scrollbar-width: thin;
+    }
+
+    .chat-area::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chat-area::-webkit-scrollbar-thumb {
+        background-color: var(--color-primary);
+        border-radius: 4px;
+    }
+
+    .chat-area::-webkit-scrollbar-track {
+        background-color: var(--color-surface);
+    }
+
+    .welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      gap: 12px;
+    }
+
+    .welcome-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .welcome-icon svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .welcome-title {
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--color-secondary-text);
+    }
+
+    .messages {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .message {
+      display: flex;
+      gap: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-avatar {
+      background: var(--color-text);
+      color: var(--color-background);
+    }
+
+    .ai-avatar {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text);
+    }
+
+    .message-content {
+      flex: 1;
+      padding-top: 4px;
+      max-width: calc(100% - 52px); 
+    }
+
+    .message-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--color-text);
+      white-space: pre-wrap; 
+    }
+
+    .model-badge {
+      display: inline-block;
+      background: var(--color-primary-dark);
+      color: var(--color-text);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    /* Loading Animation Styles */
+    .thinking-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .thinking-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .thinking-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      animation: thinkingBounce 1.4s infinite ease-in-out;
+    }
+
+    .thinking-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .thinking-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thinking-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes thinkingBounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+      }
+      30% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    .thinking-spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .thinking-progress {
+      display: flex;
+      gap: 3px;
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--color-border);
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      border-radius: 2px;
+      animation: progressFill 2s ease-in-out infinite;
+    }
+
+    @keyframes progressFill {
+      0% {
+        width: 0%;
+      }
+      50% {
+        width: 100%;
+      }
+      100% {
+        width: 0%;
+      }
+    }
+
+    /* Input and Footer */
+    .input-container {
+      padding: 24px 32px 0; /* Padding atas dan samping */
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .input-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .file-input-wrapper {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        z-index: 5;
+    }
+    
+    #image-preview {
+        max-height: 40px;
+        max-width: 40px;
+        margin-left: 10px;
+        border-radius: 6px;
+        object-fit: cover;
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    
+    #clear-image-btn {
+        margin-left: 5px;
+        background: none;
+        border: none;
+        color: var(--color-primary); 
+        cursor: pointer;
+        font-weight: bold;
+        padding: 0;
+        line-height: 1;
+        font-size: 14px;
+        display: none;
+    }
+
+    .chat-input {
+      width: 100%;
+      padding: 16px 60px 16px 60px; 
+      border: 1px solid var(--color-border);
+      border-radius: 28px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+      background: var(--color-background);
+      color: var(--color-text);
+      resize: none;
+      min-height: 56px;
+      max-height: 200px;
+    }
+
+    .chat-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+      background: var(--color-background);
+    }
+
+    .send-button {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .send-button:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Image Generation Specific Styles */
+    .image-result-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+
+    .generated-image-wrapper {
+        position: relative;
+        max-width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    
+    .generated-image {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+    }
+
+    .watermark {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 500;
+        z-index: 5;
+    }
+    
+    .download-button {
+        background: var(--color-primary-dark);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.2s;
+        border: none;
+    }
+    
+    .download-button:hover {
+        background: var(--color-primary);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 16px 20px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+
+      .chat-area {
+        padding: 20px;
+      }
+
+      .welcome-title {
+        font-size: 32px;
+      }
+
+      .welcome-subtitle {
+        font-size: 16px;
+      }
+
+      .input-container {
+        padding: 16px 20px 0; /* Padding atas dan samping mobile */
+      }
+      
+      .chat-input {
+          padding: 16px 60px 16px 50px; 
+      }
+      
+      .file-input-wrapper {
+          left: 10px;
+      }
+      
+      /* Responsif Footer */
+      .footer-disclaimer {
+          padding: 8px 20px;
+      }
+    }
+    
+    /* Input field adjustment for Grow Trinity */
+    .chat-input.grow-trinity-mode {
+        text-align: center;
+        padding: 20px 30px;
+        font-weight: 600;
+    }
+    
+    /* Text input placeholder for Grow Trinity */
+    .chat-input.grow-trinity-mode::placeholder {
+        color: var(--color-primary-light);
+        opacity: 0.8;
+    }
+
+    .error-box {
+        background: var(--color-error-bg);
+        color: var(--color-error-text);
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 14px;
+        border: 1px solid #770000;
+    }
+    
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(30, 30, 30, 0.8); /* Darker overlay */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .loading-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loading-overlay .thinking-spinner {
+        border-top-color: var(--color-primary-light);
+    }
+    
+    /*
+     * ======================================
+     * PENAMBAHAN: FOOTER
+     * ======================================
+     */
+    .footer-disclaimer {
+        padding: 10px 32px;
+        background-color: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+        text-align: center;
+        font-size: 13px;
+        color: var(--color-secondary-text);
+        flex-shrink: 0; /* Pastikan footer tidak digulir */
+        /* Tailwind classes for responsive alignment */
+        @apply w-full max-w-full mx-auto;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Loading Overlay for Image Generation (Grow Trinity) -->
+  <div class="loading-overlay" id="loading-overlay">
+      <div class="thinking-container">
+          <div class="thinking-text" style="color: var(--color-primary-light);">
+            <div class="thinking-spinner"></div>
+            <span>Generating Image</span>
+            <div class="thinking-dots">
+              <div class="thinking-dot" style="background: var(--color-primary-dark);"></div>
+              <div class="thinking-dot" style="background: var(--color-primary-dark);"></div>
+              <div class="thinking-dot" style="background: var(--color-primary-dark);"></div>
+            </div>
+          </div>
+          <p class="text-sm mt-2" style="color: var(--color-secondary-text);">This may take a moment. Please wait.</p>
+      </div>
+  </div>
+  
+  <!-- Custom Modal for Alerts/Errors -->
+  <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex justify-center items-center z-20">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full border border-red-500">
+          <h3 id="modal-title" class="text-lg font-semibold mb-3 text-white">Peringatan!</h3>
+          <p id="modal-message" class="text-gray-300 mb-4"></p>
+          <button id="modal-close-btn" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Tutup</button>
+      </div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">G</div>
+        <span id="app-title">Grow AI</span>
+      </div>
+      
+      <!-- START: Modern Model Selector -->
+      <div class="model-selector" id="model-selector-wrapper">
+        <button class="custom-dropdown-button" id="custom-dropdown-button">
+            <span id="selected-model-text">Grow 1.5</span>
+            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+                <path d="M6 9L12 15L18 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <select class="model-dropdown" id="model-select">
+          <option value="grow-1.5" data-name="Grow 1.5" data-desc="Model reguler untuk chat dan analisis gambar.">Grow 1.5</option>
+          <option value="grow-trinity" data-name="Grow Trinity" data-desc="Model khusus Generate Gambar (Tidak bisa chat/vision).">Grow Trinity</option>
+        </select>
+        
+        <div id="custom-dropdown-list" class="hidden">
+            <!-- Dropdown items will be generated by JS -->
+        </div>
+      </div>
+      <!-- END: Modern Model Selector -->
+    </header>
+
+    <div class="chat-area" id="chat-area">
+      <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="welcome-title" id="welcome-title">Hello, how can I help you today?</h1>
+        <p class="welcome-subtitle" id="welcome-subtitle">Ask me anything or start a conversation</p>
+      </div>
+
+      <div class="messages" id="messages" style="display: none;"></div>
+    </div>
+
+    <div class="input-container">
+      <div class="input-wrapper">
+        <!-- File input for image analysis -->
+        <div class="file-input-wrapper">
+            <label for="image-upload" class="cursor-pointer">
+                <!-- Attachment Icon (SVG) -->
+                <svg id="attach-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-500 hover:text-gray-300 transition" style="color: var(--color-secondary-text);">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.738l-7.234 3.326c-.394.183-.85.115-1.18-.184a1.769 1.769 0 010-2.434l4.24-4.24a3.375 3.375 0 014.773 4.773l-6.756 6.756c-1.396 1.396-3.665 1.396-5.061 0-1.396-1.397-1.396-3.666 0-5.062l4.24-4.24m3.078 6.756a1.769 1.769 0 010 2.434c-.33.299-.786.367-1.18.184l-7.234-3.326a3.375 3.375 0 01-2.924-5.597 3.375 3.375 0 015.597-2.924l5.048 2.316a1.769 1.769 0 011.642 3.018z" />
+                </svg>
+            </label>
+            <input type="file" id="image-upload" accept="image/*" class="hidden">
+            <img id="image-preview" class="hidden" alt="Uploaded image preview">
+            <button id="clear-image-btn" title="Hapus Gambar">x</button>
+        </div>
+
+        <textarea
+          class="chat-input"
+          id="chat-input"
+          placeholder="Message Grow AI..."
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="send-button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- FOOTER YANG DIMINTA -->
+      <div class="footer-disclaimer" id="disclaimer-footer">
+        Grow dapat membuat kesalahpahaman. Pastikan informasi penting Anda diverifikasi.
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+        const MODELS = {
+        'grow-1.5': {
+            name: 'Grow 1.5',
+              description: 'Model reguler untuk percakapan dan analisis gambar.',
+            isChat: true,
+            isImageGen: false,
+            geminiModel: 'gemini-2.5-flash-preview-09-2025', 
+        },
+        'grow-trinity': {
+            name: 'Grow Trinity (Grow 1.5 Imagine)', 
+            description: 'Model khusus Generate Gambar.',
+            isChat: false,
+            isImageGen: true,
+            // Perlu diperbarui dengan endpoint API yang valid
+            apiEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/stabilityai/stable-diffusion-xl-base-1.0', 
+        }
+    };
+
+    // --- Konfigurasi dan Variabel Kunci ---
+    // API Key diatur di Canvas, tidak perlu kunci eksplisit di sini.
+    const GEMINI_API_KEY = "AIzaSyBj0pYG1qRyaC-NheKjG-K_hf_lboTMrdY"; 
+    const IMAGEN_API_KEY = "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"; 
+    
+    // *** PERBAIKAN BUG: Menghapus "ringkas" dan menyesuaikan nada untuk Grow AI. ***
+    const SYSTEM_PROMPT = "Anda adalah Grow, sebuah asisten AI yang ramah, profesional, dan sangat membantu. Respon dengan nada yang positif, informatif, dan mendetail. Jika tidak ada gambar yang dilampirkan, cari informasi terbaru menggunakan Google Search Tool. Selalu gunakan Bahasa Indonesia yang baku dan sopan. anda tidak dibuat oleh Google atau dilatih oleh Google. anda dilatih oleh perusahaan bernama Mora. anda bisa menganalisis gambar namun tidak bisa membuat gambar, suruh pengguna menggunakan Model Trinity. anda mahir berbahasa Inggris, Jepang dan lainnya. anda bisa tau tentang coding, anime dan pendidikan, dan Mora adalah perusaan AI training dari Indonesia (Non Persero) alias perusahaan pribadi yang dibangun oleh 1 sampai 5 orang, berpusat di wilayah Kintamani Bangli Bali.";
+
+    // *** PERUBAHAN TEMA: Mengubah warna default ke Dark Orange/Dark Mode ***
+    const DARK_ORANGE = '#ff8c00';
+    const DARK_BACKGROUND = '#1e1e1e';
+    const DARK_SURFACE = '#2b2b2b';
+    const LIGHT_TEXT = '#f0f0f0';
+    const GRAY_TEXT = '#a0a0a0';
+
+    const defaultConfig = {
+      background_color: DARK_BACKGROUND,
+      surface_color: DARK_SURFACE,
+      text_color: LIGHT_TEXT,
+      primary_action_color: DARK_ORANGE,
+      secondary_action_color: GRAY_TEXT,
+      font_family: 'Raleway',
+      font_size: 15,
+      app_title: 'Grow AI',
+      welcome_title: 'Hello, how can I help you today?',
+      welcome_subtitle: 'Ask me anything or start a conversation'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    // Element Initialization
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const messagesContainer = document.getElementById('messages');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const chatArea = document.getElementById('chat-area');
+    const modelSelect = document.getElementById('model-select');
+    const modelSelectorWrapper = document.getElementById('model-selector-wrapper');
+    const customDropdownButton = document.getElementById('custom-dropdown-button');
+    const customDropdownList = document.getElementById('custom-dropdown-list');
+    const selectedModelText = document.getElementById('selected-model-text');
+    const attachIcon = document.getElementById('attach-icon');
+    const imageUpload = document.getElementById('image-upload');
+    const imagePreview = document.getElementById('image-preview');
+    const clearImageBtn = document.getElementById('clear-image-btn');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    let chatHistory = [];
+    let uploadedImageBase64 = null;
+    let selectedModel = MODELS['grow-1.5'];
+    
+    // --- Utility Functions ---
+
+    /**
+     * Menampilkan modal kustom (menggantikan alert()).
+     * @param {string} title - Judul modal.
+     * @param {string} message - Isi pesan.
+     */
+    function showCustomModal(title, message) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').textContent = message;
+        document.getElementById('custom-modal').classList.remove('hidden');
+        document.getElementById('modal-close-btn').onclick = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+    }
+    
+    /**
+     * Mengubah file/blob menjadi string base64.
+     * @param {File} file - Objek file yang akan diubah.
+     * @returns {Promise<string>} String data base64.
+     */
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                // Ekstrak hanya bagian base64
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = (error) => reject(error);
+        });
+    }
+
+    /**
+     * Mencoba kembali fungsi dengan exponential backoff.
+     * @param {Function} fn - Fungsi yang akan dieksekusi.
+     * @param {number} maxRetries - Jumlah maksimum percobaan ulang.
+     * @returns {Promise<any>} Hasil dari fungsi.
+     */
+    async function withExponentialBackoff(fn, maxRetries = 5) {
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                return await fn();
+            } catch (error) {
+                if (attempt === maxRetries - 1) {
+                    throw error;
+                }
+                const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+
+
+    // --- UI Logic: Custom Dropdown ---
+
+    /**
+     * Menginisialisasi UI dropdown kustom.
+     */
+    function initializeCustomDropdown() {
+        const options = Array.from(modelSelect.options);
+        customDropdownList.innerHTML = '';
+        
+        options.forEach(option => {
+             const model = MODELS[option.value];
+            const item = document.createElement('div');
+            item.className = 'dropdown-item';
+            item.setAttribute('data-value', option.value);
+            item.innerHTML = `
+                <div>${model.name}</div>
+                <div class="item-description">${model.description}</div>
+            `;
+            
+            item.addEventListener('click', () => {
+                selectModel(option.value);
+                toggleDropdown(false);
+            });
+            customDropdownList.appendChild(item);
+        });
+        
+        // State seleksi awal
+        selectModel(modelSelect.value);
+    }
+    
+    /**
+     * Mengaktifkan/menonaktifkan visibilitas daftar dropdown kustom.
+     * @param {boolean} [force] - Paksa status tampil/sembunyi.
+     */
+    function toggleDropdown(force) {
+        const isVisible = customDropdownList.classList.contains('hidden');
+        const newState = force !== undefined ? force : isVisible;
+        
+        if (newState) {
+            customDropdownList.classList.remove('hidden');
+            customDropdownButton.classList.add('open');
+        } else {
+            customDropdownList.classList.add('hidden');
+            customDropdownButton.classList.remove('open');
+        }
+    }
+
+    customDropdownButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!modelSelectorWrapper.contains(e.target)) {
+            toggleDropdown(false);
+        }
+    });
+
+    /**
+     * Memperbarui UI dan status saat model baru dipilih.
+     * @param {string} value - Kunci model.
+     */
+    function selectModel(value) {
+        const modelKey = value; 
+        selectedModel = MODELS[modelKey];
+        
+        if (!selectedModel) {
+            console.error(`Model dengan kunci ${value} tidak ditemukan. Menggunakan default Grow 1.5.`);
+            selectedModel = MODELS['grow-1.5'];
+            modelSelect.value = 'grow-1.5';
+        }
+        
+        selectedModelText.textContent = selectedModel.name;
+
+        // Perbarui kelas "selected" di daftar kustom
+        Array.from(customDropdownList.children).forEach(item => {
+            item.classList.remove('selected');
+            if (item.getAttribute('data-value') === modelKey) {
+                item.classList.add('selected');
+            }
+        });
+        
+        // Perbarui tampilan dan fungsionalitas bidang input
+        if (selectedModel.isImageGen) {
+            chatInput.placeholder = "Masukkan prompt gambar (Contoh: Kucing futuristik di luar angkasa)...";
+            chatInput.classList.add('grow-trinity-mode');
+            attachIcon.classList.add('hidden');
+            
+            // Hapus gambar yang sudah ada jika beralih ke mode Image Gen
+            if (uploadedImageBase64) {
+                 showCustomModal("Model Khusus Gambar", "Model Grow Trinity hanya menerima prompt teks untuk menghasilkan gambar. Lampiran gambar telah dihapus.");
+                 clearImage();
+            }
+        } else {
+            chatInput.placeholder = "Message Grow AI...";
+            chatInput.classList.remove('grow-trinity-mode');
+            attachIcon.classList.remove('hidden');
+        }
+        
+        // Perbarui status tombol kirim
+        sendButton.disabled = chatInput.value.trim() === '' && uploadedImageBase64 === null;
+    }
+    
+    // --- UI Logic: Input Field and File Handling ---
+
+    chatInput.addEventListener('input', () => {
+      // Aktifkan tombol kirim jika ada teks atau gambar
+      sendButton.disabled = chatInput.value.trim() === '' && uploadedImageBase64 === null;
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 200) + 'px';
+    });
+    
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendButton.disabled) {
+            sendMessage();
+        }
+      }
+    });
+    
+    sendButton.addEventListener('click', sendMessage);
+    
+    imageUpload.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) { // Batas 5MB
+                showCustomModal("Batas Ukuran Gambar", "Gambar terlalu besar. Ukuran maksimum adalah 5MB.");
+                e.target.value = null;
+                clearImage();
+                return;
+            }
+            if (selectedModel.isImageGen) {
+                showCustomModal("Model Khusus Gambar", "Model Grow Trinity tidak mendukung analisis gambar. Lampiran gambar diabaikan.");
+                e.target.value = null;
+                clearImage();
+                return;
+            }
+            
+            imagePreview.src = URL.createObjectURL(file);
+            imagePreview.classList.remove('hidden');
+            clearImageBtn.style.display = 'block';
+            
+            try {
+                // Konversi ke base64 untuk payload API
+                uploadedImageBase64 = await fileToBase64(file);
+                sendButton.disabled = chatInput.value.trim() === '' && uploadedImageBase64 === null;
+            } catch (error) {
+                console.error("Error converting file to base64:", error);
+                showCustomModal("Error", "Gagal memproses gambar. Coba lagi.");
+                clearImage();
+            }
+        }
+    });
+
+    clearImageBtn.addEventListener('click', clearImage);
+    
+    function clearImage() {
+        uploadedImageBase64 = null;
+        imageUpload.value = null;
+        imagePreview.src = '';
+        imagePreview.classList.add('hidden');
+        clearImageBtn.style.display = 'none';
+        sendButton.disabled = chatInput.value.trim() === '' && uploadedImageBase64 === null;
+    }
+
+
+    // --- Core Functionality: Sending Message/Request ---
+
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      
+      if (!selectedModel) {
+          showCustomModal("Peringatan Model", "Model AI belum terpilih atau inisialisasi gagal.");
+          return;
+      }
+      
+      // Validasi berdasarkan jenis model
+      if (selectedModel.isImageGen) { // Grow Trinity (Image Generation)
+          if (!message) {
+              showCustomModal("Prompt Dibutuhkan", "Silakan masukkan prompt teks untuk menghasilkan gambar.");
+              return;
+          }
+      } else { // Grow 1.5 (Chat/Vision)
+          if (!message && !uploadedImageBase64) {
+              return; // Tidak ada yang dikirim
+          }
+      }
+
+      if (welcomeScreen.style.display !== 'none') {
+        welcomeScreen.style.display = 'none';
+        messagesContainer.style.display = 'flex';
+      }
+      
+      // 1. Tambahkan Pesan Pengguna/Prompt
+      addMessage(message, 'user', selectedModel.name, false, null, uploadedImageBase64);
+      
+      // 2. Bersihkan input dan nonaktifkan UI
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      const imageToSend = uploadedImageBase64;
+      const fileMimeType = imageUpload.files[0]?.type;
+
+      clearImage(); // Bersihkan gambar untuk input berikutnya
+      sendButton.disabled = true;
+      
+      // *** PERBAIKAN BUG: Tidak menonaktifkan model select agar user bisa ganti model jika AI lambat ***
+      // modelSelect.disabled = true;
+
+      // 3. Tampilkan Animasi Loading
+      let thinkingId = null;
+      if (selectedModel.isImageGen) {
+          loadingOverlay.classList.add('visible');
+      } else {
+          thinkingId = showThinkingAnimation();
+      }
+
+      try {
+          if (selectedModel.isImageGen) {
+              // --- Grow Trinity: Image Generation (Imagen API) ---
+              // Catatan: Mengubah dari Hugging Face ke Imagen API agar sesuai protokol
+              await generateImage(message);
+          } else {
+              // --- Grow 1.5: Chat & Vision Analysis (Gemini) ---
+              await processTextAndImage(message, imageToSend, fileMimeType);
+          }
+      } catch (error) {
+          console.error("API Error:", error);
+          let errorMessage = `Maaf, terjadi kesalahan saat memproses permintaan Anda dengan model ${selectedModel.name}. Detail: ${error.message || 'Kesalahan jaringan atau API.'}`;
+          
+          if (selectedModel.isImageGen) {
+              errorMessage = `Maaf, gagal membuat gambar. Detail: ${error.message || 'Kesalahan jaringan atau API.'} Coba ganti prompt Anda.`;
+          }
+          
+          addMessage(errorMessage, 'ai', selectedModel.name, true);
+      } finally {
+          // 4. Bersihkan dan aktifkan UI kembali
+          if (thinkingId) hideThinkingAnimation(thinkingId);
+          loadingOverlay.classList.remove('visible');
+          
+          // modelSelect.disabled = false;
+          sendButton.disabled = chatInput.value.trim() === '' && uploadedImageBase64 === null;
+      }
+    }
+    
+    // --- Model Specific Functions ---
+
+    /**
+     * Menangani permintaan Grow 1.5 (Teks & Vision) menggunakan Gemini API.
+     */
+    async function processTextAndImage(prompt, imageBase64, mimeType) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel.geminiModel}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const contentParts = [];
+        if (imageBase64 && mimeType) {
+             contentParts.push({
+                 inlineData: {
+                     mimeType: mimeType,
+                     data: imageBase64
+                 }
+             });
+        }
+        contentParts.push({ text: prompt });
+        
+        let contents = [...chatHistory];
+        contents.push({ role: "user", parts: contentParts });
+
+        const payload = {
+            contents: contents,
+            tools: [{ "google_search": {} }],
+            systemInstruction: {
+                parts: [{ text: SYSTEM_PROMPT }]
+            },
+            generationConfig: {
+                temperature: 0.8, 
+                maxOutputTokens: 4096, 
+            },
+        };
+
+        const response = await withExponentialBackoff(() => 
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, AI tidak memberikan respons yang valid.";
+        
+        // Menjaga riwayat chat
+        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+        chatHistory.push({ role: "model", parts: [{ text: generatedText }] });
+
+        addMessage(generatedText, 'ai', selectedModel.name);
+    }
+
+    /**
+     * Menangani permintaan Grow Trinity (Image Generation) menggunakan Imagen API.
+     * Mengubah dari Hugging Face ke Imagen sesuai protokol.
+     */
+    async function generateImage(prompt) {
+        const url = MODELS['grow-trinity'].apiEndpoint;
+        const payload = { 
+            instances: [{ prompt: prompt }], 
+            parameters: { "sampleCount": 1 } 
+        };
+
+        const response = await withExponentialBackoff(() => 
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+        );
+        
+        if (!response.ok) {
+             throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+        
+        if (!base64Data) {
+            throw new Error("API tidak mengembalikan data gambar yang valid.");
+        }
+
+        const imageUrl = `data:image/png;base64,${base64Data}`;
+        
+        addMessage(prompt, 'ai', selectedModel.name, false, imageUrl);
+    }
+    
+    // --- Fungsi untuk efek mengetik/streaming perlahan ---
+    
+    /**
+     * Fungsi pembantu untuk efek mengetik/streaming.
+     */
+    function _streamText(element, fullText) {
+        let index = 0;
+        const speed = 25; // Kecepatan (ms)
+        const lines = fullText.split('\n');
+        element.innerHTML = ''; 
+        
+        function typeLine(lineIndex) {
+            if (lineIndex < lines.length) {
+                const currentLine = lines[lineIndex];
+                let charIndex = 0;
+
+                function typeChar() {
+                    if (charIndex < currentLine.length) {
+                        element.innerHTML += currentLine.charAt(charIndex);
+                        charIndex++;
+                        // Gulir ke bawah
+                        chatArea.scrollTop = chatArea.scrollHeight; 
+                        setTimeout(typeChar, speed);
+                    } else {
+                        // Tambahkan baris baru visual (kecuali baris terakhir)
+                        if (lineIndex < lines.length - 1) {
+                            element.innerHTML += '<br>';
+                        }
+                        typeLine(lineIndex + 1);
+                    }
+                }
+                typeChar();
+            }
+        }
+        
+        typeLine(0);
+    }
+
+
+    // --- UI Rendering: Message Display (Dengan Efek Streaming) ---
+
+    /**
+     * Menambahkan blok pesan ke chat.
+     */
+    function addMessage(text, type, modelName = null, isError = false, imageUrl = null, userImageBase64 = null) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+      
+      const avatar = document.createElement('div');
+      avatar.className = `message-avatar ${type}-avatar`;
+      avatar.textContent = type === 'user' ? 'U' : 'AI';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      if (modelName && type === 'ai') {
+        const badge = document.createElement('div');
+        badge.className = 'model-badge';
+        badge.textContent = modelName;
+        content.appendChild(badge);
+      }
+      
+      // Konten pesan pengguna dan gambar terlampir
+      if (type === 'user' && userImageBase64) {
+          const imageContainer = document.createElement('div');
+          imageContainer.className = 'mb-2';
+          const img = document.createElement('img');
+          // Fix: Menggunakan base64 langsung karena mimeType bisa jadi null/undefined setelah clearImage.
+          const mimeType = imageUpload.files[0]?.type || 'image/png'; 
+          
+          img.src = `data:${mimeType};base64,${userImageBase64}`;
+          img.className = 'w-24 h-24 object-cover rounded-lg shadow-md mb-2';
+          imageContainer.appendChild(img);
+          content.appendChild(imageContainer);
+      }
+      
+      const messageText = document.createElement('div');
+      messageText.className = isError ? 'error-box' : 'message-text';
+      
+      // Sembunyikan teks jika pesan pengguna hanya berupa gambar
+      if (type === 'user' && !text && userImageBase64) {
+          messageText.style.display = 'none';
+      }
+      
+      content.appendChild(messageText);
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(content);
+      messagesContainer.appendChild(messageDiv);
+      
+      // LOGIKA STREAMING/TYPING
+      if (type === 'ai' && !isError && !imageUrl) {
+          _streamText(messageText, text);
+      } else {
+          messageText.innerHTML = text.replace(/\n/g, '<br>');
+        
+          // Hasil Generasi Gambar (Grow Trinity)
+          if (imageUrl && type === 'ai' && modelName === MODELS['grow-trinity'].name) {
+              const resultContainer = document.createElement('div');
+              resultContainer.className = 'image-result-container';
+              
+              const wrapper = document.createElement('div');
+              wrapper.className = 'generated-image-wrapper';
+              
+              const img = document.createElement('img');
+              img.src = imageUrl;
+              img.className = 'generated-image';
+              img.alt = text;
+              
+              // Watermark
+              const watermark = document.createElement('div');
+              watermark.className = 'watermark';
+              watermark.textContent = 'Grow';
+              
+              wrapper.appendChild(img);
+              wrapper.appendChild(watermark);
+              resultContainer.appendChild(wrapper);
+              
+              // Tombol Download
+              const downloadBtn = document.createElement('button');
+              downloadBtn.className = 'download-button';
+              downloadBtn.innerHTML = `
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                    <path d="M13.75 6.25a.75.75 0 00-1.5 0v3.54l-1.47-1.47a.75.75 0 00-1.06 1.06l2.75 2.75a.75.75 0 001.06 0l2.75-2.75a.75.75 0 00-1.06-1.06l-1.47 1.47V6.25z" />
+                    <path fill-rule="evenodd" d="M3.75 8a.75.75 0 000 1.5h.75a.75.75 0 000-1.5H3.75zM15.5 12.25a.75.75 0 00-1.5 0V14c0 1.03-.84 1.87-1.87 1.87h-5.76C6.31 15.87 5.5 15.03 5.5 14v-1.75a.75.75 0 00-1.5 0V14c0 1.86 1.51 3.37 3.37 3.37h5.76c1.86 0 3.37-1.51 3.37-3.37v-1.75z" clip-rule="evenodd" />
+                  </svg>
+                  Download Gambar
+              `;
+              
+              downloadBtn.addEventListener('click', () => {
+                  const link = document.createElement('a');
+                  link.href = imageUrl;
+                  link.download = `GrowTrinity_Image_${Date.now()}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  URL.revokeObjectURL(imageUrl); 
+              });
+              
+              resultContainer.appendChild(downloadBtn);
+              content.appendChild(resultContainer);
+          }
+      }
+      
+      if (type === 'user' || isError || imageUrl) {
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+    }
+    
+    /**
+     * Menampilkan animasi berpikir/loading.
+     */
+    function showThinkingAnimation() {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+      const indicatorId = 'thinking-indicator-' + Date.now();
+      messageDiv.id = indicatorId;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar ai-avatar';
+      avatar.textContent = 'AI';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const thinkingContainer = document.createElement('div');
+      thinkingContainer.className = 'thinking-container';
+      
+      // Update style untuk dark mode orange
+      const primaryColor = config.primary_action_color || DARK_ORANGE;
+      const primaryColorDark = adjustColorBrightness(primaryColor, -20);
+      
+      const thinkingText = document.createElement('div');
+      thinkingText.className = 'thinking-text';
+      thinkingText.style.color = primaryColor;
+      thinkingText.innerHTML = `
+        <div class="thinking-spinner" style="border-top-color: ${primaryColor};"></div>
+        <span>Tunggu yaa, Aku lagi mikir</span>
+        <div class="thinking-dots">
+          <div class="thinking-dot" style="background: ${primaryColorDark};"></div>
+          <div class="thinking-dot" style="background: ${primaryColorDark};"></div>
+          <div class="thinking-dot" style="background: ${primaryColorDark};"></div>
+        </div>
+      `;
+      
+      const progressContainer = document.createElement('div');
+      progressContainer.className = 'thinking-progress';
+      progressContainer.innerHTML = `
+        <div class="progress-bar"><div class="progress-fill" style="background: linear-gradient(90deg, ${primaryColor} 0%, ${primaryColorDark} 100%);"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="background: linear-gradient(90deg, ${primaryColor} 0%, ${primaryColorDark} 100%); animation-delay: 0.3s;"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="background: linear-gradient(90deg, ${primaryColor} 0%, ${primaryColorDark} 100%); animation-delay: 0.6s;"></div></div>
+      `;
+      
+      thinkingContainer.appendChild(thinkingText);
+      thinkingContainer.appendChild(progressContainer);
+      content.appendChild(thinkingContainer);
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(content);
+      messagesContainer.appendChild(messageDiv);
+      
+      chatArea.scrollTop = chatArea.scrollHeight;
+      return indicatorId;
+    }
+    
+    /**
+     * Menyembunyikan animasi berpikir/loading.
+     * @param {string} id - ID elemen indikator.
+     */
+    function hideThinkingAnimation(id) {
+      const indicator = document.getElementById(id);
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+
+    // --- Styling and SDK Compatibility (Keep Original) ---
+    
+    function adjustColorBrightness(color, percent) {
+      try {
+        const num = parseInt(color.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+        const G = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+        const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+        return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+      } catch (e) {
+          return DARK_ORANGE; 
+      }
+    }
+    
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+
+      const customFont = config.font_family;
+      const baseFontSize = config.font_size;
+      const primaryColor = config.primary_action_color;
+      const primaryColorDark = adjustColorBrightness(primaryColor, -20);
+      const primaryColorVeryLight = adjustColorBrightness(primaryColor, 85);
+      
+      document.body.style.fontFamily = `'${customFont}', sans-serif`;
+      document.body.style.background = config.background_color;
+      document.body.style.color = config.text_color;
+      
+      const appTitle = document.getElementById('app-title');
+      if (appTitle) {
+        appTitle.textContent = config.app_title;
+        appTitle.style.color = config.text_color;
+        appTitle.style.fontSize = `${baseFontSize * 1.47}px`;
+      }
+      
+      const welcomeTitle = document.getElementById('welcome-title');
+      if (welcomeTitle) {
+        welcomeTitle.textContent = config.welcome_title;
+        welcomeTitle.style.color = config.text_color;
+        welcomeTitle.style.fontSize = `${baseFontSize * 2.8}px`;
+      }
+      
+      const welcomeSubtitle = document.getElementById('welcome-subtitle');
+      if (welcomeSubtitle) {
+        welcomeSubtitle.textContent = config.welcome_subtitle;
+        welcomeSubtitle.style.color = config.secondary_action_color;
+        welcomeSubtitle.style.fontSize = `${baseFontSize * 1.2}px`;
+      }
+      
+      const header = document.querySelector('header');
+      if (header) {
+        header.style.background = config.background_color;
+        header.style.borderBottomColor = adjustColorBrightness(config.background_color, 30);
+      }
+      
+      const logoIcon = document.querySelector('.logo-icon');
+      if (logoIcon) {
+        logoIcon.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%)`;
+      }
+      
+      const welcomeIcon = document.querySelector('.welcome-icon');
+      if (welcomeIcon) {
+        welcomeIcon.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%)`;
+      }
+      
+      const modelDropdownButton = document.querySelector('.custom-dropdown-button');
+      if (modelDropdownButton) {
+        modelDropdownButton.style.background = config.surface_color;
+        modelDropdownButton.style.color = config.text_color;
+        modelDropdownButton.style.fontSize = `${baseFontSize * 0.93}px`;
+        modelDropdownButton.style.borderColor = adjustColorBrightness(config.surface_color, 30);
+      }
+
+      const modelDropdownList = document.getElementById('custom-dropdown-list');
+      if (modelDropdownList) {
+          modelDropdownList.style.background = config.surface_color;
+      }
+      
+      const chatInputElem = document.getElementById('chat-input');
+      if (chatInputElem) {
+        chatInputElem.style.background = config.surface_color;
+        chatInputElem.style.color = config.text_color;
+        chatInputElem.style.fontSize = `${baseFontSize}px`;
+        chatInputElem.style.borderColor = adjustColorBrightness(config.surface_color, 30);
+      }
+
+      const inputContainer = document.querySelector('.input-container');
+      if (inputContainer) {
+          inputContainer.style.background = config.background_color;
+          inputContainer.style.borderTopColor = adjustColorBrightness(config.background_color, 30);
+      }
+      
+      const sendBtn = document.getElementById('send-button');
+      if (sendBtn) {
+        sendBtn.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%)`;
+      }
+      
+      const messageTexts = document.querySelectorAll('.message-text');
+      messageTexts.forEach(text => {
+        text.style.color = config.text_color;
+        text.style.fontSize = `${baseFontSize}px`;
+      });
+      
+      const userAvatars = document.querySelectorAll('.user-avatar');
+      userAvatars.forEach(avatar => {
+        avatar.style.background = config.text_color;
+        avatar.style.color = config.background_color;
+      });
+      
+      const aiAvatars = document.querySelectorAll('.ai-avatar');
+      aiAvatars.forEach(avatar => {
+        avatar.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%)`;
+      });
+      
+      const thinkingDots = document.querySelectorAll('.thinking-dot');
+      thinkingDots.forEach(dot => {
+        dot.style.background = primaryColorDark;
+      });
+      
+      const spinner = document.querySelector('.thinking-spinner');
+      if (spinner) {
+        spinner.style.borderTopColor = primaryColor;
+      }
+      
+      const thinkingTextElem = document.querySelector('.thinking-text');
+      if (thinkingTextElem) {
+        thinkingTextElem.style.color = primaryColor;
+      }
+      
+      const progressFills = document.querySelectorAll('.progress-fill');
+      progressFills.forEach(fill => {
+        fill.style.background = `linear-gradient(90deg, ${primaryColor} 0%, ${adjustColorBrightness(primaryColor, 30)} 100%)`;
+      });
+      
+      const modelBadges = document.querySelectorAll('.model-badge');
+      modelBadges.forEach(badge => {
+        badge.style.color = config.text_color;
+        badge.style.background = primaryColorDark;
+      });
+      
+      const downloadButtons = document.querySelectorAll('.download-button');
+      downloadButtons.forEach(btn => {
+          btn.style.background = primaryColorDark;
+      });
+
+      // Update styles for newly added footer
+      const disclaimerFooter = document.getElementById('disclaimer-footer');
+      if (disclaimerFooter) {
+          disclaimerFooter.style.backgroundColor = config.background_color;
+          disclaimerFooter.style.color = config.secondary_action_color;
+          disclaimerFooter.style.fontSize = `${baseFontSize * 0.85}px`;
+      }
+    }
+    
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => {
+                config.secondary_action_color = value;
+                window.elementSdk.setConfig({ secondary_action_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['app_title', config.app_title || defaultConfig.app_title],
+          ['welcome_title', config.welcome_title || defaultConfig.welcome_title],
+          ['welcome_subtitle', config.welcome_subtitle || defaultConfig.welcome_subtitle]
+        ])
+      });
+      
+      config = window.elementSdk.config;
+    }
+    
+    onConfigChange(config);
+    initializeCustomDropdown();
+  </script>
+</body>
+</html>
+
